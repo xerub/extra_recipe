@@ -15,6 +15,7 @@
 		B0F37BCB1E361EAE00179E85 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B0F37BC91E361EAE00179E85 /* LaunchScreen.storyboard */; };
 		B0F37BD51E361FCC00179E85 /* jailbreak.c in Sources */ = {isa = PBXBuildFile; fileRef = B0F37BD31E361FCC00179E85 /* jailbreak.c */; };
 		B0F37BDE1E37AC0700179E85 /* load_regs_and_crash.s in Sources */ = {isa = PBXBuildFile; fileRef = B0F37BDD1E37AC0700179E85 /* load_regs_and_crash.s */; };
+		B39A22191ECBB89D00F0EE23 /* unjail.m in Sources */ = {isa = PBXBuildFile; fileRef = B39A22171ECBB89D00F0EE23 /* unjail.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,8 @@
 		B0F37BD21E361FCC00179E85 /* extra_recipe-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "extra_recipe-Bridging-Header.h"; sourceTree = "<group>"; };
 		B0F37BD31E361FCC00179E85 /* jailbreak.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = jailbreak.c; sourceTree = "<group>"; };
 		B0F37BDD1E37AC0700179E85 /* load_regs_and_crash.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = load_regs_and_crash.s; sourceTree = "<group>"; };
+		B39A22171ECBB89D00F0EE23 /* unjail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = unjail.m; sourceTree = "<group>"; };
+		B39A22181ECBB89D00F0EE23 /* unjail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unjail.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +71,8 @@
 				B0F37BC91E361EAE00179E85 /* LaunchScreen.storyboard */,
 				B0F37BCC1E361EAE00179E85 /* Info.plist */,
 				B0F37BD31E361FCC00179E85 /* jailbreak.c */,
+				B39A22171ECBB89D00F0EE23 /* unjail.m */,
+				B39A22181ECBB89D00F0EE23 /* unjail.h */,
 				B0F37BDD1E37AC0700179E85 /* load_regs_and_crash.s */,
 				B0F37BD21E361FCC00179E85 /* extra_recipe-Bridging-Header.h */,
 				B0E5165A1E39459300CE4C47 /* README */,
@@ -154,6 +159,7 @@
 				B0F37BD51E361FCC00179E85 /* jailbreak.c in Sources */,
 				B0F37BC31E361EAE00179E85 /* ViewController.swift in Sources */,
 				B0F37BC11E361EAE00179E85 /* AppDelegate.swift in Sources */,
+				B39A22191ECBB89D00F0EE23 /* unjail.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

