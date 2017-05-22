@@ -17,6 +17,7 @@
 #include <mach/mach.h>
 #include <mach-o/dyld.h>
 #include <sys/stat.h>
+#include <sys/mount.h>
 #include <sys/utsname.h>
 #include <Foundation/Foundation.h>
 

@@ -15,8 +15,29 @@
 		B0F37BCB1E361EAE00179E85 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B0F37BC91E361EAE00179E85 /* LaunchScreen.storyboard */; };
 		B0F37BD51E361FCC00179E85 /* jailbreak.c in Sources */ = {isa = PBXBuildFile; fileRef = B0F37BD31E361FCC00179E85 /* jailbreak.c */; };
 		B0F37BDE1E37AC0700179E85 /* load_regs_and_crash.s in Sources */ = {isa = PBXBuildFile; fileRef = B0F37BDD1E37AC0700179E85 /* load_regs_and_crash.s */; };
+		B30AADDC1EDAF39E00C02607 /* mach-portal in CopyFiles */ = {isa = PBXBuildFile; fileRef = B30AADDA1EDAF37B00C02607 /* mach-portal */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B337975F1ED35C6200FC0BEB /* launchctl in Resources */ = {isa = PBXBuildFile; fileRef = B337975E1ED35C6200FC0BEB /* launchctl */; };
 		B39A22191ECBB89D00F0EE23 /* unjail.m in Sources */ = {isa = PBXBuildFile; fileRef = B39A22171ECBB89D00F0EE23 /* unjail.m */; };
+		B3CEC24F1ECE1ADD00508B1A /* def.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3CEC24E1ECE1ADD00508B1A /* def.plist */; };
+		B3CEC2511ECE1AEB00508B1A /* bootstrap.tar in Resources */ = {isa = PBXBuildFile; fileRef = B3CEC2501ECE1AEB00508B1A /* bootstrap.tar */; };
+		B3CEC2551ECE1B0600508B1A /* tar in Resources */ = {isa = PBXBuildFile; fileRef = B3CEC2541ECE1B0600508B1A /* tar */; };
+		B3CEC25A1ECE321900508B1A /* mach_portal in CopyFiles */ = {isa = PBXBuildFile; fileRef = B3CEC2521ECE1AF800508B1A /* mach_portal */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		B3DE70BB1EDAD6280053D5BA /* offsets.m in Sources */ = {isa = PBXBuildFile; fileRef = B3DE70B91EDAD6280053D5BA /* offsets.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B3CEC2591ECE31F400508B1A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				B30AADDC1EDAF39E00C02607 /* mach-portal in CopyFiles */,
+				B3CEC25A1ECE321900508B1A /* mach_portal in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		B0E5165A1E39459300CE4C47 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
@@ -30,8 +51,16 @@
 		B0F37BD21E361FCC00179E85 /* extra_recipe-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "extra_recipe-Bridging-Header.h"; sourceTree = "<group>"; };
 		B0F37BD31E361FCC00179E85 /* jailbreak.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = jailbreak.c; sourceTree = "<group>"; };
 		B0F37BDD1E37AC0700179E85 /* load_regs_and_crash.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = load_regs_and_crash.s; sourceTree = "<group>"; };
+		B30AADDA1EDAF37B00C02607 /* mach-portal */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = "mach-portal"; sourceTree = "<group>"; };
+		B337975E1ED35C6200FC0BEB /* launchctl */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = launchctl; sourceTree = "<group>"; };
 		B39A22171ECBB89D00F0EE23 /* unjail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = unjail.m; sourceTree = "<group>"; };
 		B39A22181ECBB89D00F0EE23 /* unjail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unjail.h; sourceTree = "<group>"; };
+		B3CEC24E1ECE1ADD00508B1A /* def.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = def.plist; sourceTree = "<group>"; };
+		B3CEC2501ECE1AEB00508B1A /* bootstrap.tar */ = {isa = PBXFileReference; lastKnownFileType = archive.tar; path = bootstrap.tar; sourceTree = "<group>"; };
+		B3CEC2521ECE1AF800508B1A /* mach_portal */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = mach_portal; sourceTree = "<group>"; };
+		B3CEC2541ECE1B0600508B1A /* tar */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = tar; sourceTree = "<group>"; };
+		B3DE70B91EDAD6280053D5BA /* offsets.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = offsets.m; sourceTree = "<group>"; };
+		B3DE70BA1EDAD6280053D5BA /* offsets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = offsets.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +93,7 @@
 		B0F37BBF1E361EAE00179E85 /* extra_recipe */ = {
 			isa = PBXGroup;
 			children = (
+				B30AADDA1EDAF37B00C02607 /* mach-portal */,
 				B0F37BC01E361EAE00179E85 /* AppDelegate.swift */,
 				B0F37BC21E361EAE00179E85 /* ViewController.swift */,
 				B0F37BC41E361EAE00179E85 /* Main.storyboard */,
@@ -72,10 +102,17 @@
 				B0F37BCC1E361EAE00179E85 /* Info.plist */,
 				B0F37BD31E361FCC00179E85 /* jailbreak.c */,
 				B39A22171ECBB89D00F0EE23 /* unjail.m */,
+				B337975E1ED35C6200FC0BEB /* launchctl */,
+				B3CEC2541ECE1B0600508B1A /* tar */,
+				B3CEC2521ECE1AF800508B1A /* mach_portal */,
+				B3CEC2501ECE1AEB00508B1A /* bootstrap.tar */,
+				B3CEC24E1ECE1ADD00508B1A /* def.plist */,
 				B39A22181ECBB89D00F0EE23 /* unjail.h */,
 				B0F37BDD1E37AC0700179E85 /* load_regs_and_crash.s */,
 				B0F37BD21E361FCC00179E85 /* extra_recipe-Bridging-Header.h */,
 				B0E5165A1E39459300CE4C47 /* README */,
+				B3DE70B91EDAD6280053D5BA /* offsets.m */,
+				B3DE70BA1EDAD6280053D5BA /* offsets.h */,
 			);
 			path = extra_recipe;
 			sourceTree = "<group>";
@@ -90,6 +127,7 @@
 				B0F37BB91E361EAD00179E85 /* Sources */,
 				B0F37BBA1E361EAD00179E85 /* Frameworks */,
 				B0F37BBB1E361EAD00179E85 /* Resources */,
+				B3CEC2591ECE31F400508B1A /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -141,10 +179,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B337975F1ED35C6200FC0BEB /* launchctl in Resources */,
 				B0E5165B1E39459300CE4C47 /* README in Resources */,
+				B3CEC24F1ECE1ADD00508B1A /* def.plist in Resources */,
 				B0F37BCB1E361EAE00179E85 /* LaunchScreen.storyboard in Resources */,
 				B0F37BC81E361EAE00179E85 /* Assets.xcassets in Resources */,
+				B3CEC2511ECE1AEB00508B1A /* bootstrap.tar in Resources */,
 				B0F37BC61E361EAE00179E85 /* Main.storyboard in Resources */,
+				B3CEC2551ECE1B0600508B1A /* tar in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,6 +201,7 @@
 				B0F37BD51E361FCC00179E85 /* jailbreak.c in Sources */,
 				B0F37BC31E361EAE00179E85 /* ViewController.swift in Sources */,
 				B0F37BC11E361EAE00179E85 /* AppDelegate.swift in Sources */,
+				B3DE70BB1EDAD6280053D5BA /* offsets.m in Sources */,
 				B39A22191ECBB89D00F0EE23 /* unjail.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -293,6 +336,10 @@
 				DEVELOPMENT_TEAM = 854G7LGZ42;
 				INFOPLIST_FILE = extra_recipe/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/extra_recipe",
+				);
 				OTHER_LDFLAGS = (
 					"-framework",
 					IOKit,
@@ -315,6 +362,10 @@
 				DEVELOPMENT_TEAM = 854G7LGZ42;
 				INFOPLIST_FILE = extra_recipe/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/extra_recipe",
+				);
 				OTHER_LDFLAGS = (
 					"-framework",
 					IOKit,

