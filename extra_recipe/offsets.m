@@ -31,8 +31,91 @@ uint64_t k_uuid_copy = 0;
 
 uint64_t allproc = 0;
 uint64_t realhost = 0;
-uint64_t surfacevt = 0;
 uint64_t call5 = 0;
+
+int nports = 40000;
+
+static NSMutableArray *consttable = nil;
+static NSMutableArray *collide = nil;
+
+static int
+constload(void)
+{
+    struct utsname uts;
+    uname(&uts);
+    if (strstr(uts.version, "Marijuan")) {
+        return -2;
+    }
+
+    NSString *strv = [NSString stringWithUTF8String:uts.version];
+    NSArray *dp =[[NSArray alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForResource: @"def" ofType:@"plist"]];
+    int m = 0;
+    collide = [NSMutableArray new];
+
+    for (NSDictionary *dict in dp) {
+        if ([dict[@"vers"] isEqualToString:strv]) {
+            [collide setObject:[NSMutableArray new] atIndexedSubscript:m];
+            int i = 0;
+            for (NSString *str in dict[@"val"]) {
+                [collide[m] setObject:[NSNumber numberWithUnsignedLongLong:strtoull([str UTF8String], 0, 0)] atIndexedSubscript:i];
+                i++;
+            }
+            m++;
+        }
+    }
+    if (m) {
+        return 0;
+    }
+    return -1;
+}
+
+static char
+affine_const_by_surfacevt(uint64_t surfacevt_slid)
+{
+    for (NSArray *arr in collide) {
+        if ((surfacevt_slid & 0xfffff) == ([[arr objectAtIndex:1] unsignedLongLongValue] & 0xfffff)) {
+            NSLog(@"affined");
+            consttable = arr;
+            return 0;
+        }
+    }
+    return -1;
+}
+
+uint64_t
+constget(int idx)
+{
+    return [[consttable objectAtIndex:idx] unsignedLongLongValue];
+}
+
+static int
+offload(const char *hw, NSString *ios)
+{
+    NSArray *dp = [[NSArray alloc] initWithContentsOfFile: [[NSBundle mainBundle] pathForResource: @"dex" ofType:@"plist"]];
+    for (NSDictionary *dict in dp) {
+        NSArray *hw_array = dict[@"hw"];
+        for (NSString *h in hw_array) {
+            if (!strcmp([h UTF8String], hw)) {
+                NSArray *ios_array = dict[@"ios"];
+                for (NSString *i in ios_array) {
+                    if ([ios compare:i] == NSOrderedSame) {
+                        NSArray *a = dict[@"offsets"];
+                        AGXCommandQueue_vtable = strtoull([[a objectAtIndex:0] UTF8String], NULL, 0);
+                        OSData_getMetaClass = strtoull([[a objectAtIndex:1] UTF8String], NULL, 0);
+                        OSSerializer_serialize = strtoull([[a objectAtIndex:2] UTF8String], NULL, 0);
+                        k_uuid_copy = strtoull([[a objectAtIndex:3] UTF8String], NULL, 0);
+                        allproc = strtoull([[a objectAtIndex:4] UTF8String], NULL, 0);
+                        realhost = strtoull([[a objectAtIndex:5] UTF8String], NULL, 0);
+                        call5 = strtoull([[a objectAtIndex:6] UTF8String], NULL, 0);
+                        nports = [dict[@"nports"] intValue];
+                        return 0;
+                    }
+                }
+            }
+        }
+    }
+    return -1;
+}
 
 int
 init_offsets(void)
@@ -51,46 +134,19 @@ init_offsets(void)
 
     if (!strncmp(uts.machine, "iPhone9,", sizeof("iPhone9"))) {
         // iPhone 7 (plus)
+        if (constload() || affine_const_by_surfacevt(0xfffffff006e521e0)) {
+            return ERR_INTERNAL;
+        }
         if ([version compare:@"10.1" options:NSNumericSearch] == NSOrderedAscending) {
             // 10.0[.x]
-            mp = "@executable_path/mach-portal";
-            AGXCommandQueue_vtable = 0xfffffff006f83b78;
-            OSData_getMetaClass = 0xfffffff007479938;
-            OSSerializer_serialize = 0xfffffff007490240;
-            k_uuid_copy = 0xfffffff00749b5f8;
-            allproc = 0xfffffff0075f0178;
-            realhost = 0xfffffff00757c898;
-            surfacevt = 0xfffffff006e521e0;
-            call5 = 0xfffffff00633fe10;
+            mp = "@executable_path/mach-portal.dylib";
         } else {
             // 10.1[.x]
-            mp = "@executable_path/mach_portal";
-            AGXCommandQueue_vtable = 0xfffffff006f83d38;
-            OSData_getMetaClass = 0xfffffff00747ad9c;
-            OSSerializer_serialize = 0xfffffff0074916b4;
-            k_uuid_copy = 0xfffffff00749ca6c;
-            allproc = 0xfffffff0075f0178;
-            realhost = 0xfffffff00757c898;
-            surfacevt = 0xfffffff006e521e0;
-            call5 = 0xfffffff006337e10;
-        }
-    } else if (!strcmp(uts.machine, "iPhone8,1")) {
-        // iPhone 6s
-        if ([version compare:@"10.2" options:NSNumericSearch] == NSOrderedSame) {
-            // 10.2
-            AGXCommandQueue_vtable = 0xfffffff006f9b950;
-            OSData_getMetaClass = 0xfffffff00743755c;
-            OSSerializer_serialize = 0xfffffff00744df5c;
-            k_uuid_copy = 0xfffffff007459378;
-            allproc = 0xfffffff0075ac438;
-            realhost = 0xfffffff007538a98;
-            surfacevt = 0xfffffff006e84820;
-            call5 = 0xfffffff0063cfe10;
-            return ERR_UNSUPPORTED_YET; // TODO: remove after writing KPP bypass
+            mp = "@executable_path/mach_portal.dylib";
         }
     }
 
-    if (!AGXCommandQueue_vtable) {
+    if (offload(uts.machine, version) || !AGXCommandQueue_vtable) {
         return ERR_UNSUPPORTED_YET;
     }
 

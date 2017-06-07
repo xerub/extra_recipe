@@ -36,9 +36,11 @@ extern uint64_t k_uuid_copy;
 
 extern uint64_t allproc;
 extern uint64_t realhost;
-extern uint64_t surfacevt;
 extern uint64_t call5;
 
+extern int nports;
+
 int init_offsets(void);
+uint64_t constget(int idx);
 
 #endif /* offsets_h */
