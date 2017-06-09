@@ -176,5 +176,27 @@
 			<string>0xfffffff00647fe10</string>
 		</array>
 	</dict>
+	<dict>
+		<key>hw</key>
+		<array>
+			<string>iPod7,1</string>
+		</array>
+		<key>ios</key>
+		<array>
+			<string>10.2</string>
+		</array>
+		<key>nports</key>
+		<integer>40000</integer>
+		<key>offsets</key>
+		<array>
+			<string>0xfffffff006fa2c50</string>
+			<string>0xfffffff0074446dc</string>
+			<string>0xfffffff00745b0dc</string>
+			<string>0xfffffff0074664f8</string>
+			<string>0xfffffff0075bc468</string>
+			<string>0xfffffff007548a98</string>
+			<string>0xfffffff006477e10</string>
+		</array>
+	</dict>
 </array>
 </plist>
