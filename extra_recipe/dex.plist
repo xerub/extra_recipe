@@ -65,6 +65,7 @@
 	<dict>
 		<key>hw</key>
 		<array>
+			<string>iPhone7,1</string>
 			<string>iPhone7,2</string>
 		</array>
 		<key>ios</key>
