@@ -14,6 +14,7 @@ If it says "failed, reboot" you should really reboot.  Re-trying the same app wi
 | iPad Air 2 | iOS 10.2 |
 | iPad Mini 3 (WiFi) | iOS 10.2 |
 | iPhone 6 | iOS 10.2 |
+| iPhone 5S | iOS 10.2 |
 
 ##### Credits:
 
