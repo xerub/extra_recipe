@@ -221,5 +221,28 @@
 			<string>0xfffffff00648be10</string>
 		</array>
 	</dict>
+	<dict>
+		<key>hw</key>
+		<array>
+			<string>iPhone6,1</string>
+			<string>iPhone6,2</string>
+		</array>
+		<key>ios</key>
+		<array>
+			<string>10.1.1</string>
+		</array>
+		<key>nports</key>
+		<integer>40000</integer>
+		<key>offsets</key>
+		<array>
+			<string>0xfffffff006fbe6b8</string>
+			<string>0xfffffff007434110</string>
+			<string>0xfffffff00744aa28</string>
+			<string>0xfffffff007455d90</string>
+			<string>0xfffffff0075a8128</string>
+			<string>0xfffffff007534898</string>
+			<string>0xfffffff006487e10</string>
+		</array>
+	</dict>
 </array>
 </plist>
