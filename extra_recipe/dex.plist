@@ -152,5 +152,27 @@
 			<string>0xfffffff0063cfe10</string>
 		</array>
 	</dict>
+	<dict>
+		<key>hw</key>
+		<array>
+			<string>iPad4,4</string>
+		</array>
+		<key>ios</key>
+		<array>
+			<string>10.0.2</string>
+		</array>
+		<key>nports</key>
+		<real>40000</real>
+		<key>offsets</key>
+		<array>
+			<string>0xfffffff006fb1738</string>
+			<string>0xfffffff007432c48</string>
+			<string>0xfffffff007449550</string>
+			<string>0xfffffff0074548b8</string>
+			<string>0xfffffff0075a8128</string>
+			<string>0xfffffff007534898</string>
+			<string>0xfffffff006463e10</string>
+		</array>
+	</dict>
 </array>
 </plist>
