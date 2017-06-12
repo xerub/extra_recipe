@@ -19,8 +19,8 @@ If it says "failed, reboot" you should really reboot.  Re-trying the same app wi
 | iPad Mini 2 | iOS 10.2 |
 | iPad Pro 9.7 | iOS 10.2 |
 | iPad Pro 12.9 | iOS 10.2 |
- 
+
 ##### Credits:
- 
+
 * Ian Beer for the amazingly simple, yet awesome, kernel exploit
 * @qwertyoruiop for the amazingly complicated, yet effective, memprot bypass
