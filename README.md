@@ -3,7 +3,7 @@ A jailbreak.
 ##### Howto:
 
 Clean reboot the device, wait for a couple of minutes, start extra_recipe, wait for 5 seconds or so, then hit "go".
-If it says "failed, reboot" you should really reboot.  Re-trying the same app will most likely encounter a kernel panic omewhere down the road.
+If it says "failed, reboot" you should really reboot.  Re-trying the same app will most likely encounter a kernel panic somewhere down the road.
 
 ##### Support:
 
@@ -20,7 +20,7 @@ If it says "failed, reboot" you should really reboot.  Re-trying the same app wi
 | iPad Pro 9.7 | iOS 10.2 |
 | iPad Pro 12.9 | iOS 10.2 |
  
- ##### Credits:
+##### Credits:
  
 * Ian Beer for the amazingly simple, yet awesome, kernel exploit
 * @qwertyoruiop for the amazingly complicated, yet effective, memprot bypass
