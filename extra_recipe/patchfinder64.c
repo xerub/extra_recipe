@@ -266,7 +266,8 @@ xref64(const uint8_t *buf, addr_t start, addr_t end, addr_t what)
             if (shift == 1) {
                 imm <<= 12;
             } else {
-                assert(shift == 0);
+                //assert(shift == 0);
+                if (shift > 1) continue;
             }
             //printf("%llx: ADD X%d, X%d, 0x%x\n", i, reg, rn, imm);
             value[reg] = value[rn] + imm;
@@ -274,7 +275,14 @@ xref64(const uint8_t *buf, addr_t start, addr_t end, addr_t what)
             unsigned rn = (op >> 5) & 0x1F;
             unsigned imm = ((op >> 10) & 0xFFF) << 3;
             //printf("%llx: LDR X%d, [X%d, 0x%x]\n", i, reg, rn, imm);
+            if (!imm) continue;			/* XXX not counted as true xref */
             value[reg] = value[rn] + imm;	/* XXX address, not actual value */
+        } else if ((op & 0xF9C00000) == 0xF9000000) {
+            unsigned rn = (op >> 5) & 0x1F;
+            unsigned imm = ((op >> 10) & 0xFFF) << 3;
+            //printf("%llx: STR X%d, [X%d, 0x%x]\n", i, reg, rn, imm);
+            if (!imm) continue;			/* XXX not counted as true xref */
+            value[rn] = value[rn] + imm;	// XXX address, not actual value
         } else if ((op & 0x9F000000) == 0x10000000) {
             signed adr = ((op & 0x60000000) >> 18) | ((op & 0xFFFFE0) << 8);
             //printf("%llx: ADR X%d, 0x%llx\n", i, reg, ((long long)adr >> 11) + i);
@@ -314,7 +322,8 @@ calc64(const uint8_t *buf, addr_t start, addr_t end, int which)
             if (shift == 1) {
                 imm <<= 12;
             } else {
-                assert(shift == 0);
+                //assert(shift == 0);
+                if (shift > 1) continue;
             }
             //printf("%llx: ADD X%d, X%d, 0x%x\n", i, reg, rn, imm);
             value[reg] = value[rn] + imm;
@@ -322,7 +331,14 @@ calc64(const uint8_t *buf, addr_t start, addr_t end, int which)
             unsigned rn = (op >> 5) & 0x1F;
             unsigned imm = ((op >> 10) & 0xFFF) << 3;
             //printf("%llx: LDR X%d, [X%d, 0x%x]\n", i, reg, rn, imm);
+            if (!imm) continue;			/* XXX not counted as true xref */
             value[reg] = value[rn] + imm;	// XXX address, not actual value
+        } else if ((op & 0xF9C00000) == 0xF9000000) {
+            unsigned rn = (op >> 5) & 0x1F;
+            unsigned imm = ((op >> 10) & 0xFFF) << 3;
+            //printf("%llx: STR X%d, [X%d, 0x%x]\n", i, reg, rn, imm);
+            if (!imm) continue;			/* XXX not counted as true xref */
+            value[rn] = value[rn] + imm;	// XXX address, not actual value
         } else if ((op & 0x9F000000) == 0x10000000) {
             signed adr = ((op & 0x60000000) >> 18) | ((op & 0xFFFFE0) << 8);
             //printf("%llx: ADR X%d, 0x%llx\n", i, reg, ((long long)adr >> 11) + i);
@@ -376,6 +392,12 @@ follow_call64(const uint8_t *buf, addr_t call)
     return call + w;
 }
 
+static addr_t
+follow_cbz(const uint8_t *buf, addr_t cbz)
+{
+    return cbz + ((*(int *)(buf + cbz) & 0x3FFFFE0) << 10 >> 13);
+}
+
 /* kernel iOS10 **************************************************************/
 
 #include <fcntl.h>
@@ -386,7 +408,7 @@ follow_call64(const uint8_t *buf, addr_t call)
 
 #ifdef __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__
 #include <mach/mach.h>
-vm_size_t kread(vm_address_t where, uint8_t *p, vm_size_t size);
+size_t kread(uint64_t where, uint8_t *p, size_t size);
 #endif
 
 static uint8_t *kernel = NULL;
@@ -403,6 +425,7 @@ static addr_t pstring_size = 0;
 static addr_t kerndumpbase = -1;
 static addr_t kernel_entry = 0;
 static void *kernel_mh = 0;
+static addr_t kernel_delta = 0;
 
 int
 init_kernel(addr_t base, const char *filename)
@@ -543,6 +566,9 @@ init_kernel(addr_t base, const char *filename)
             if (!kernel_mh) {
                 kernel_mh = kernel + seg->vmaddr - min;
             }
+            if (!strcmp(seg->segname, "__LINKEDIT")) {
+                kernel_delta = seg->vmaddr - min - seg->fileoff;
+            }
         }
         q = q + cmd->cmdsize;
     }
@@ -565,6 +591,7 @@ term_kernel(void)
 #define INSN_RET  0xD65F03C0, 0xFFFFFFFF
 #define INSN_CALL 0x94000000, 0xFC000000
 #define INSN_B    0x14000000, 0xFC000000
+#define INSN_CBZ  0x34000000, 0xFC000000
 
 addr_t
 find_register_value(addr_t where, int reg)
@@ -880,3 +907,173 @@ find_sysbootnonce(void)
     }
     return 0;
 }
+
+#ifdef HAVE_MAIN
+
+/* extra_recipe **************************************************************/
+
+#define INSN_STR8 0xF9000000 | 8, 0xFFC00000 | 0x1F
+
+addr_t
+find_AGXCommandQueue_vtable(void)
+{
+    addr_t val, str8;
+    addr_t ref = find_strref("AGXCommandQueue", 1, 1);
+    if (!ref) {
+        return 0;
+    }
+    val = find_register_value(ref, 0);
+    if (!val) {
+        return 0;
+    }
+    ref = find_reference(val, 1, 1);
+    if (!ref) {
+        return 0;
+    }
+    ref -= kerndumpbase;
+    str8 = step64(kernel, ref, 32, INSN_STR8);
+    if (!str8) {
+        return 0;
+    }
+    val = calc64(kernel, ref, str8, 8);
+    if (!val) {
+        return 0;
+    }
+    return val + kerndumpbase;
+}
+
+addr_t
+find_allproc(void)
+{
+    addr_t val, bof, str8;
+    addr_t ref = find_strref("\"pgrp_add : pgrp is dead adding process\"", 1, 0);
+    if (!ref) {
+        return 0;
+    }
+    ref -= kerndumpbase;
+    bof = bof64(kernel, xnucore_base, ref);
+    if (!bof) {
+        return 0;
+    }
+    str8 = step64_back(kernel, ref, ref - bof, INSN_STR8);
+    if (!str8) {
+        return 0;
+    }
+    val = calc64(kernel, bof, str8, 8);
+    if (!val) {
+        return 0;
+    }
+    return val + kerndumpbase;
+}
+
+addr_t
+find_call5(void)
+{
+    addr_t bof;
+    uint8_t gadget[] = { 0x95, 0x5A, 0x40, 0xF9, 0x68, 0x02, 0x40, 0xF9, 0x88, 0x5A, 0x00, 0xF9, 0x60, 0xA2, 0x40, 0xA9 };
+    uint8_t *str = boyermoore_horspool_memmem(kernel + prelink_base, prelink_size, gadget, sizeof(gadget));
+    if (!str) {
+        return 0;
+    }
+    bof = bof64(kernel, prelink_base, str - kernel);
+    if (!bof) {
+        return 0;
+    }
+    return bof + kerndumpbase;
+}
+
+addr_t
+find_realhost(addr_t priv)
+{
+    addr_t val;
+    if (!priv) {
+        return 0;
+    }
+    priv -= kerndumpbase;
+    val = calc64(kernel, priv, priv + 12, 0);
+    if (!val) {
+        return 0;
+    }
+    return val + kerndumpbase;
+}
+
+#include <mach-o/nlist.h>
+
+addr_t
+find_symbol(const char *symbol)
+{
+    unsigned i;
+    const struct mach_header *hdr = kernel_mh;
+    const uint8_t *q;
+    int is64 = 0;
+
+    if (IS64(hdr)) {
+        is64 = 4;
+    }
+
+    /* XXX will only work on a decrypted kernel */
+    if (!kernel_delta) {
+        return 0;
+    }
+
+    /* XXX I should cache these.  ohwell... */
+    q = (uint8_t *)(hdr + 1) + is64;
+    for (i = 0; i < hdr->ncmds; i++) {
+        const struct load_command *cmd = (struct load_command *)q;
+        if (cmd->cmd == LC_SYMTAB) {
+            const struct symtab_command *sym = (struct symtab_command *)q;
+            const char *stroff = (const char *)kernel + sym->stroff + kernel_delta;
+            if (is64) {
+                uint32_t k;
+                const struct nlist_64 *s = (struct nlist_64 *)(kernel + sym->symoff + kernel_delta);
+                for (k = 0; k < sym->nsyms; k++) {
+                    if (s[k].n_type & N_STAB) {
+                        continue;
+                    }
+                    if (s[k].n_value && (s[k].n_type & N_TYPE) != N_INDR) {
+                        if (!strcmp(symbol, stroff + s[k].n_un.n_strx)) {
+                            /* XXX this is an unslid address */
+                            return s[k].n_value;
+                        }
+                    }
+                }
+            }
+        }
+        q = q + cmd->cmdsize;
+    }
+    return 0;
+}
+
+/* test **********************************************************************/
+
+int
+main(int argc, char **argv)
+{
+    int rv;
+    addr_t base = 0;
+    const addr_t vm_kernel_slide = 0;
+    rv = init_kernel(base, (argc > 1) ? argv[1] : "krnl");
+    assert(rv == 0);
+
+    addr_t AGXCommandQueue_vtable = find_AGXCommandQueue_vtable();
+    printf("\t\t\t<string>0x%llx</string>\n", AGXCommandQueue_vtable - vm_kernel_slide);
+    addr_t OSData_getMetaClass = find_symbol("__ZNK6OSData12getMetaClassEv");
+    printf("\t\t\t<string>0x%llx</string>\n", OSData_getMetaClass);
+    addr_t OSSerializer_serialize = find_symbol("__ZNK12OSSerializer9serializeEP11OSSerialize");
+    printf("\t\t\t<string>0x%llx</string>\n", OSSerializer_serialize);
+    addr_t k_uuid_copy = find_symbol("_uuid_copy");
+    printf("\t\t\t<string>0x%llx</string>\n", k_uuid_copy);
+    addr_t allproc = find_allproc();
+    printf("\t\t\t<string>0x%llx</string>\n", allproc);
+    addr_t realhost = find_realhost(find_symbol("_host_priv_self") + vm_kernel_slide);
+    printf("\t\t\t<string>0x%llx</string>\n", realhost - vm_kernel_slide);
+    addr_t call5 = find_call5();
+    printf("\t\t\t<string>0x%llx</string>\n", call5 - vm_kernel_slide);
+
+    assert(find_symbol("_rootvnode") == find_gPhysBase() + 0x38 - vm_kernel_slide);
+
+    term_kernel();
+    return 0;
+}
+
+#endif	/* HAVE_MAIN */

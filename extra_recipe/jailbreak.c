@@ -634,19 +634,22 @@ static uint64_t init_proc = 0;
 static uint64_t kern_proc = 0;
 static uint64_t kern_task = 0;
 
-vm_size_t
-kread(vm_address_t where, uint8_t *p, vm_size_t size)
+kern_return_t mach_vm_read_overwrite(vm_map_t target_task, mach_vm_address_t address, mach_vm_size_t size, mach_vm_address_t data, mach_vm_size_t *outsize);
+kern_return_t mach_vm_write(vm_map_t target_task, mach_vm_address_t address, vm_offset_t data, mach_msg_type_number_t dataCnt);
+
+size_t
+kread(uint64_t where, uint8_t *p, size_t size)
 {
     int rv;
     size_t offset = 0;
     while (offset < size) {
-        vm_size_t sz, chunk = 2048;
+        mach_vm_size_t sz, chunk = 2048;
         if (chunk > size - offset) {
             chunk = size - offset;
         }
-        rv = vm_read_overwrite(tfp0, where + offset, chunk, (vm_address_t)(p + offset), &sz);
+        rv = mach_vm_read_overwrite(tfp0, where + offset, chunk, (mach_vm_address_t)(p + offset), &sz);
         if (rv || sz == 0) {
-            fprintf(stderr, "[e] error reading kernel @0x%zx\n", offset + where);
+            fprintf(stderr, "[e] error reading kernel @%p\n", (void *)(offset + where));
             break;
         }
         offset += sz;
@@ -655,34 +658,34 @@ kread(vm_address_t where, uint8_t *p, vm_size_t size)
 }
 
 uint64_t
-kread_uint64(vm_address_t where)
+kread_uint64(uint64_t where)
 {
     uint64_t value = 0;
-    vm_size_t sz = kread(where, (uint8_t *)&value, sizeof(value));
+    size_t sz = kread(where, (uint8_t *)&value, sizeof(value));
     return (sz == sizeof(value)) ? value : 0;
 }
 
 uint32_t
-kread_uint32(vm_address_t where)
+kread_uint32(uint64_t where)
 {
     uint32_t value = 0;
-    vm_size_t sz = kread(where, (uint8_t *)&value, sizeof(value));
+    size_t sz = kread(where, (uint8_t *)&value, sizeof(value));
     return (sz == sizeof(value)) ? value : 0;
 }
 
-vm_size_t
-kwrite(vm_address_t where, const uint8_t *p, vm_size_t size)
+size_t
+kwrite(uint64_t where, const uint8_t *p, size_t size)
 {
     int rv;
     size_t offset = 0;
     while (offset < size) {
-        vm_size_t chunk = 2048;
+        size_t chunk = 2048;
         if (chunk > size - offset) {
             chunk = size - offset;
         }
-        rv = vm_write(tfp0, where + offset, (vm_offset_t)p + offset, chunk);
+        rv = mach_vm_write(tfp0, where + offset, (mach_vm_offset_t)p + offset, chunk);
         if (rv) {
-            fprintf(stderr, "[e] error writing kernel @0x%zx\n", offset + where);
+            fprintf(stderr, "[e] error writing kernel @%p\n", (void *)(offset + where));
             break;
         }
         offset += chunk;
@@ -690,14 +693,14 @@ kwrite(vm_address_t where, const uint8_t *p, vm_size_t size)
     return offset;
 }
 
-vm_size_t
-kwrite_uint64(vm_address_t where, uint64_t value)
+size_t
+kwrite_uint64(uint64_t where, uint64_t value)
 {
     return kwrite(where, (uint8_t *)&value, sizeof(value));
 }
 
-vm_size_t
-kwrite_uint32(vm_address_t where, uint32_t value)
+size_t
+kwrite_uint32(uint64_t where, uint32_t value)
 {
     return kwrite(where, (uint8_t *)&value, sizeof(value));
 }
@@ -762,31 +765,6 @@ __text:FFFFFFF006337E10
   kx2(call5 + kaslr_shift, where - 0xB0, where);
   return kread_uint32(where + 0x38);
 }
-
-#define	CS_VALID		0x0000001	/* dynamically valid */
-#define CS_ADHOC		0x0000002	/* ad hoc signed */
-#define CS_GET_TASK_ALLOW	0x0000004	/* has get-task-allow entitlement */
-#define CS_INSTALLER		0x0000008	/* has installer entitlement */
-
-#define	CS_HARD			0x0000100	/* don't load invalid pages */
-#define	CS_KILL			0x0000200	/* kill process if it becomes invalid */
-#define CS_CHECK_EXPIRATION	0x0000400	/* force expiration checking */
-#define CS_RESTRICT		0x0000800	/* tell dyld to treat restricted */
-#define CS_ENFORCEMENT		0x0001000	/* require enforcement */
-#define CS_REQUIRE_LV		0x0002000	/* require library validation */
-#define CS_ENTITLEMENTS_VALIDATED	0x0004000
-
-#define	CS_ALLOWED_MACHO	0x00ffffe
-
-#define CS_EXEC_SET_HARD	0x0100000	/* set CS_HARD on any exec'ed process */
-#define CS_EXEC_SET_KILL	0x0200000	/* set CS_KILL on any exec'ed process */
-#define CS_EXEC_SET_ENFORCEMENT	0x0400000	/* set CS_ENFORCEMENT on any exec'ed process */
-#define CS_EXEC_SET_INSTALLER	0x0800000	/* set CS_INSTALLER on any exec'ed process */
-
-#define CS_KILLED		0x1000000	/* was killed by kernel for invalidity */
-#define CS_DYLD_PLATFORM	0x2000000	/* dyld used to load this is a platform binary */
-#define CS_PLATFORM_BINARY	0x4000000	/* this is a platform binary */
-#define CS_PLATFORM_PATH	0x8000000	/* platform binary by the fact of path (osx only) */
 
 int
 unjail(void)
