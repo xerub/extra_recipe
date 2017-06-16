@@ -107,7 +107,10 @@ offload(const char *hw, NSString *ios)
                         allproc = strtoull([[a objectAtIndex:4] UTF8String], NULL, 0);
                         realhost = strtoull([[a objectAtIndex:5] UTF8String], NULL, 0);
                         call5 = strtoull([[a objectAtIndex:6] UTF8String], NULL, 0);
-                        nports = [dict[@"nports"] intValue];
+                        NSNumber *np = dict[@"nports"];
+                        if (np) {
+                            nports = [np intValue];
+                        }
                         return 0;
                     }
                 }
