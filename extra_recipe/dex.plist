@@ -337,7 +337,7 @@
 			<string>0xfffffff007459378</string>
 			<string>0xfffffff0075ac438</string>
 			<string>0xfffffff007538a98</string>
-			<string>0xfffffff006292348</string>
+			<string>0xfffffff00628be10</string>
 		</array>
 	</dict>
 	<dict>
@@ -401,7 +401,7 @@
 		<integer>40000</integer>
 		<key>offsets</key>
 		<array>
-			<string>0xfffffff006f87090</string>
+			<string>0x0</string>
 			<string>0xfffffff0074446dc</string>
 			<string>0xfffffff00745b0dc</string>
 			<string>0xfffffff0074664f8</string>
