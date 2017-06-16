@@ -259,6 +259,11 @@ xref64(const uint8_t *buf, addr_t start, addr_t end, addr_t what)
             signed adr = ((op & 0x60000000) >> 18) | ((op & 0xFFFFE0) << 8);
             //printf("%llx: ADRP X%d, 0x%llx\n", i, reg, ((long long)adr << 1) + (i & ~0xFFF));
             value[reg] = ((long long)adr << 1) + (i & ~0xFFF);
+        /*} else if ((op & 0xFFE0FFE0) == 0xAA0003E0) {
+            unsigned rd = op & 0x1F;
+            unsigned rm = (op >> 16) & 0x1F;
+            //printf("%llx: MOV X%d, X%d\n", i, rd, rm);
+            value[rd] = value[rm];*/
         } else if ((op & 0xFF000000) == 0x91000000) {
             unsigned rn = (op >> 5) & 0x1F;
             unsigned shift = (op >> 22) & 3;
@@ -275,14 +280,14 @@ xref64(const uint8_t *buf, addr_t start, addr_t end, addr_t what)
             unsigned rn = (op >> 5) & 0x1F;
             unsigned imm = ((op >> 10) & 0xFFF) << 3;
             //printf("%llx: LDR X%d, [X%d, 0x%x]\n", i, reg, rn, imm);
-            if (!imm) continue;			/* XXX not counted as true xref */
-            value[reg] = value[rn] + imm;	/* XXX address, not actual value */
-        } else if ((op & 0xF9C00000) == 0xF9000000) {
+            if (!imm) continue;			// XXX not counted as true xref
+            value[reg] = value[rn] + imm;	// XXX address, not actual value
+        /*} else if ((op & 0xF9C00000) == 0xF9000000) {
             unsigned rn = (op >> 5) & 0x1F;
             unsigned imm = ((op >> 10) & 0xFFF) << 3;
             //printf("%llx: STR X%d, [X%d, 0x%x]\n", i, reg, rn, imm);
-            if (!imm) continue;			/* XXX not counted as true xref */
-            value[rn] = value[rn] + imm;	// XXX address, not actual value
+            if (!imm) continue;			// XXX not counted as true xref
+            value[rn] = value[rn] + imm;	// XXX address, not actual value*/
         } else if ((op & 0x9F000000) == 0x10000000) {
             signed adr = ((op & 0x60000000) >> 18) | ((op & 0xFFFFE0) << 8);
             //printf("%llx: ADR X%d, 0x%llx\n", i, reg, ((long long)adr >> 11) + i);
@@ -290,7 +295,7 @@ xref64(const uint8_t *buf, addr_t start, addr_t end, addr_t what)
         } else if ((op & 0xFF000000) == 0x58000000) {
             unsigned adr = (op & 0xFFFFE0) >> 3;
             //printf("%llx: LDR X%d, =0x%llx\n", i, reg, adr + i);
-            value[reg] = adr + i;		/* XXX address, not actual value */
+            value[reg] = adr + i;		// XXX address, not actual value
         }
         if (value[reg] == what) {
             return i;
@@ -315,6 +320,11 @@ calc64(const uint8_t *buf, addr_t start, addr_t end, int which)
             signed adr = ((op & 0x60000000) >> 18) | ((op & 0xFFFFE0) << 8);
             //printf("%llx: ADRP X%d, 0x%llx\n", i, reg, ((long long)adr << 1) + (i & ~0xFFF));
             value[reg] = ((long long)adr << 1) + (i & ~0xFFF);
+        /*} else if ((op & 0xFFE0FFE0) == 0xAA0003E0) {
+            unsigned rd = op & 0x1F;
+            unsigned rm = (op >> 16) & 0x1F;
+            //printf("%llx: MOV X%d, X%d\n", i, rd, rm);
+            value[rd] = value[rm];*/
         } else if ((op & 0xFF000000) == 0x91000000) {
             unsigned rn = (op >> 5) & 0x1F;
             unsigned shift = (op >> 22) & 3;
@@ -331,13 +341,13 @@ calc64(const uint8_t *buf, addr_t start, addr_t end, int which)
             unsigned rn = (op >> 5) & 0x1F;
             unsigned imm = ((op >> 10) & 0xFFF) << 3;
             //printf("%llx: LDR X%d, [X%d, 0x%x]\n", i, reg, rn, imm);
-            if (!imm) continue;			/* XXX not counted as true xref */
+            if (!imm) continue;			// XXX not counted as true xref
             value[reg] = value[rn] + imm;	// XXX address, not actual value
         } else if ((op & 0xF9C00000) == 0xF9000000) {
             unsigned rn = (op >> 5) & 0x1F;
             unsigned imm = ((op >> 10) & 0xFFF) << 3;
             //printf("%llx: STR X%d, [X%d, 0x%x]\n", i, reg, rn, imm);
-            if (!imm) continue;			/* XXX not counted as true xref */
+            if (!imm) continue;			// XXX not counted as true xref
             value[rn] = value[rn] + imm;	// XXX address, not actual value
         } else if ((op & 0x9F000000) == 0x10000000) {
             signed adr = ((op & 0x60000000) >> 18) | ((op & 0xFFFFE0) << 8);
