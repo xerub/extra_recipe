@@ -360,8 +360,8 @@ struct mac_policy_ops{
 #define ReadAnywhere64 kread_uint64
 #define WriteAnywhere64 kwrite_uint64
 
-#define copyin(to, from, size) kread(from, (uint8_t *)(to), size)
-#define copyout(to, from, size) kwrite(to, (uint8_t *)(from), size)
+#define copyin(to, from, size) kread(from, to, size)
+#define copyout(to, from, size) kwrite(to, from, size)
 
 #import "pte_stuff.h"
 

@@ -418,7 +418,7 @@ follow_cbz(const uint8_t *buf, addr_t cbz)
 
 #ifdef __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__
 #include <mach/mach.h>
-size_t kread(uint64_t where, uint8_t *p, size_t size);
+size_t kread(uint64_t where, void *p, size_t size);
 #endif
 
 static uint8_t *kernel = NULL;
