@@ -137,19 +137,49 @@ init_offsets(void)
 
     if (!strncmp(uts.machine, "iPhone9,", sizeof("iPhone9"))) {
         // iPhone 7 (plus)
-        if (constload() || affine_const_by_surfacevt(0xfffffff006e521e0)) {
-            return ERR_INTERNAL;
-        }
+        uint64_t surfacevt;
         if ([version compare:@"10.1" options:NSNumericSearch] == NSOrderedAscending) {
             // 10.0[.x]
-            mp = "@executable_path/mach-portal.dylib";
+            mp = "@executable_path/mach-portal";
+            AGXCommandQueue_vtable = 0xfffffff006f83b78;
+            OSData_getMetaClass = 0xfffffff007479938;
+            OSSerializer_serialize = 0xfffffff007490240;
+            k_uuid_copy = 0xfffffff00749b5f8;
+            allproc = 0xfffffff0075f0178;
+            realhost = 0xfffffff00757c898;
+            surfacevt = 0xfffffff006e521e0;
+            call5 = 0xfffffff00633fe10;
         } else {
             // 10.1[.x]
-            mp = "@executable_path/mach_portal.dylib";
+            mp = "@executable_path/mach_portal";
+            AGXCommandQueue_vtable = 0xfffffff006f83d38;
+            OSData_getMetaClass = 0xfffffff00747ad9c;
+            OSSerializer_serialize = 0xfffffff0074916b4;
+            k_uuid_copy = 0xfffffff00749ca6c;
+            allproc = 0xfffffff0075f0178;
+            realhost = 0xfffffff00757c898;
+            surfacevt = 0xfffffff006e521e0;
+            call5 = 0xfffffff006337e10;
+        }
+        if (constload() || affine_const_by_surfacevt(surfacevt)) {
+            return ERR_INTERNAL;
+        }
+    } else if (!strcmp(uts.machine, "iPhone8,1")) {
+        // iPhone 6s
+        if ([version compare:@"10.2" options:NSNumericSearch] == NSOrderedSame) {
+            // 10.2
+            AGXCommandQueue_vtable = 0xfffffff006f9b950;
+            OSData_getMetaClass = 0xfffffff00743755c;
+            OSSerializer_serialize = 0xfffffff00744df5c;
+            k_uuid_copy = 0xfffffff007459378;
+            allproc = 0xfffffff0075ac438;
+            realhost = 0xfffffff007538a98;
+            call5 = 0xfffffff0063cfe10;
+            return ERR_UNSUPPORTED_YET; // TODO: remove after writing KPP bypass
         }
     }
 
-    if (offload(uts.machine, version) || !AGXCommandQueue_vtable) {
+    if (!AGXCommandQueue_vtable) {
         return ERR_UNSUPPORTED_YET;
     }
 
