@@ -14,6 +14,8 @@ typedef unsigned long long addr_t;
 
 #define IS64(image) (*(uint8_t *)(image) & 1)
 
+#define MACHO(p) ((*(unsigned int *)(p) & ~1) == 0xfeedface)
+
 /* generic stuff *************************************************************/
 
 #define UCHAR_MAX 255
@@ -468,7 +470,7 @@ init_kernel(addr_t base, const char *filename)
     }
 #endif	/* __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ */
 
-    if ((buf[0] & 0xFE) != 0xCE && buf[1] != 0xFA && buf[2] != 0xED && buf[3] != 0xFE) {
+    if (!MACHO(buf)) {
         close(fd);
         return -1;
     }
