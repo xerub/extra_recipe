@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		B0E5165B1E39459300CE4C47 /* README in Resources */ = {isa = PBXBuildFile; fileRef = B0E5165A1E39459300CE4C47 /* README */; };
-		B0F37BC11E361EAE00179E85 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F37BC01E361EAE00179E85 /* AppDelegate.swift */; };
-		B0F37BC31E361EAE00179E85 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0F37BC21E361EAE00179E85 /* ViewController.swift */; };
 		B0F37BC61E361EAE00179E85 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B0F37BC41E361EAE00179E85 /* Main.storyboard */; };
 		B0F37BC81E361EAE00179E85 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B0F37BC71E361EAE00179E85 /* Assets.xcassets */; };
 		B0F37BCB1E361EAE00179E85 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B0F37BC91E361EAE00179E85 /* LaunchScreen.storyboard */; };
@@ -20,6 +18,9 @@
 		B337975F1ED35C6200FC0BEB /* launchctl in Resources */ = {isa = PBXBuildFile; fileRef = B337975E1ED35C6200FC0BEB /* launchctl */; };
 		B39A22191ECBB89D00F0EE23 /* unjail.m in Sources */ = {isa = PBXBuildFile; fileRef = B39A22171ECBB89D00F0EE23 /* unjail.m */; };
 		B3A27E571EE81A7500008AA7 /* dex.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3A27E561EE81A7500008AA7 /* dex.plist */; };
+		B3AE24D01EF006BF00F8BA15 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE24CF1EF006BF00F8BA15 /* AppDelegate.m */; };
+		B3AE24D31EF006CB00F8BA15 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE24D21EF006CB00F8BA15 /* ViewController.m */; };
+		B3AE24D61EF006E100F8BA15 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE24D51EF006E100F8BA15 /* main.m */; };
 		B3CEC24F1ECE1ADD00508B1A /* def.plist in Resources */ = {isa = PBXBuildFile; fileRef = B3CEC24E1ECE1ADD00508B1A /* def.plist */; };
 		B3CEC2511ECE1AEB00508B1A /* bootstrap.tar in Resources */ = {isa = PBXBuildFile; fileRef = B3CEC2501ECE1AEB00508B1A /* bootstrap.tar */; };
 		B3CEC2551ECE1B0600508B1A /* tar in Resources */ = {isa = PBXBuildFile; fileRef = B3CEC2541ECE1B0600508B1A /* tar */; };
@@ -44,8 +45,6 @@
 /* Begin PBXFileReference section */
 		B0E5165A1E39459300CE4C47 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		B0F37BBD1E361EAE00179E85 /* extra_recipe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = extra_recipe.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B0F37BC01E361EAE00179E85 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		B0F37BC21E361EAE00179E85 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		B0F37BC51E361EAE00179E85 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B0F37BC71E361EAE00179E85 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B0F37BCA1E361EAE00179E85 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -61,6 +60,11 @@
 		B39A22171ECBB89D00F0EE23 /* unjail.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = unjail.m; sourceTree = "<group>"; };
 		B39A22181ECBB89D00F0EE23 /* unjail.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unjail.h; sourceTree = "<group>"; };
 		B3A27E561EE81A7500008AA7 /* dex.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = dex.plist; sourceTree = "<group>"; };
+		B3AE24CE1EF006B900F8BA15 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		B3AE24CF1EF006BF00F8BA15 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		B3AE24D11EF006C500F8BA15 /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		B3AE24D21EF006CB00F8BA15 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		B3AE24D51EF006E100F8BA15 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B3CEC24E1ECE1ADD00508B1A /* def.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = def.plist; sourceTree = "<group>"; };
 		B3CEC2501ECE1AEB00508B1A /* bootstrap.tar */ = {isa = PBXFileReference; lastKnownFileType = archive.tar; path = bootstrap.tar; sourceTree = "<group>"; };
 		B3CEC2521ECE1AF800508B1A /* mach_portal.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = mach_portal.dylib; sourceTree = "<group>"; };
@@ -99,13 +103,16 @@
 		B0F37BBF1E361EAE00179E85 /* extra_recipe */ = {
 			isa = PBXGroup;
 			children = (
+				B3AE24D41EF006D400F8BA15 /* Supporting Files */,
+				B3AE24D21EF006CB00F8BA15 /* ViewController.m */,
+				B3AE24D11EF006C500F8BA15 /* ViewController.h */,
+				B3AE24CF1EF006BF00F8BA15 /* AppDelegate.m */,
+				B3AE24CE1EF006B900F8BA15 /* AppDelegate.h */,
 				B3A27E561EE81A7500008AA7 /* dex.plist */,
 				B31B47801EE5F39900C9F259 /* patchfinder64.c */,
 				B31B47811EE5F39900C9F259 /* patchfinder64.h */,
 				B31B477F1EE5F37F00C9F259 /* pte_stuff.h */,
 				B30AADDA1EDAF37B00C02607 /* mach-portal.dylib */,
-				B0F37BC01E361EAE00179E85 /* AppDelegate.swift */,
-				B0F37BC21E361EAE00179E85 /* ViewController.swift */,
 				B0F37BC41E361EAE00179E85 /* Main.storyboard */,
 				B0F37BC71E361EAE00179E85 /* Assets.xcassets */,
 				B0F37BC91E361EAE00179E85 /* LaunchScreen.storyboard */,
@@ -125,6 +132,14 @@
 				B3DE70BA1EDAD6280053D5BA /* offsets.h */,
 			);
 			path = extra_recipe;
+			sourceTree = "<group>";
+		};
+		B3AE24D41EF006D400F8BA15 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B3AE24D51EF006E100F8BA15 /* main.m */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -154,14 +169,12 @@
 		B0F37BB51E361EAD00179E85 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0810;
 				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = "Ian Beer";
 				TargetAttributes = {
 					B0F37BBC1E361EAD00179E85 = {
 						CreatedOnToolsVersion = 8.1;
 						DevelopmentTeam = 854G7LGZ42;
-						LastSwiftMigration = 0810;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -208,11 +221,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3AE24D61EF006E100F8BA15 /* main.m in Sources */,
 				B0F37BDE1E37AC0700179E85 /* load_regs_and_crash.s in Sources */,
 				B0F37BD51E361FCC00179E85 /* jailbreak.c in Sources */,
 				B31B47821EE5F39900C9F259 /* patchfinder64.c in Sources */,
-				B0F37BC31E361EAE00179E85 /* ViewController.swift in Sources */,
-				B0F37BC11E361EAE00179E85 /* AppDelegate.swift in Sources */,
+				B3AE24D31EF006CB00F8BA15 /* ViewController.m in Sources */,
+				B3AE24D01EF006BF00F8BA15 /* AppDelegate.m in Sources */,
 				B3DE70BB1EDAD6280053D5BA /* offsets.m in Sources */,
 				B39A22191ECBB89D00F0EE23 /* unjail.m in Sources */,
 			);
@@ -286,8 +300,6 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv7 armv7s arm64";
 			};
@@ -333,7 +345,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7 armv7s arm64";
@@ -360,9 +371,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.example.extra-recipe";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "extra_recipe/extra_recipe-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -386,8 +394,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.example.extra-recipe";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "extra_recipe/extra_recipe-Bridging-Header.h";
-				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
