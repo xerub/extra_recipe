@@ -28,15 +28,15 @@
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="IzK-Yo-cdU">
                                 <rect key="frame" x="66" y="47" width="243" height="41"/>
-                                <string key="text">extra_recipe + yalu
-ianbeer &amp; qwertyoruiop &amp; xerub</string>
+                                <string key="text">extra_recipe
+ianbeer &amp; xerub</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="t2A-qy-DpQ">
                                 <rect key="frame" x="91" y="606" width="193" height="41"/>
-                                <string key="text">iPhone7(plus) up to 10.1.1
+                                <string key="text">iPhone7(plus) up to 10.2
 + some 64bit iOS 10.0.1 - 10.2</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>

@@ -823,11 +823,11 @@ unjail(void)
     uint32_t csflags = kread_uint32(our_proc + offsetof_p_csflags);
     kwrite_uint32(our_proc + offsetof_p_csflags, (csflags | CS_PLATFORM_BINARY | CS_INSTALLER | CS_GET_TASK_ALLOW) & ~(CS_RESTRICT | CS_KILL | CS_HARD));
     uint64_t our_cred = kread_uint64(our_proc + offsetof_p_ucred);
-    uint64_t init_cred = kread_uint64(init_proc + offsetof_p_ucred);
-    kwrite_uint64(our_proc + offsetof_p_ucred, init_cred);
+    uint64_t kern_cred = kread_uint64(kern_proc + offsetof_p_ucred);
+    kwrite_uint64(our_proc + offsetof_p_ucred, kern_cred);
 
-    extern int unjail2(void);
-    rv = unjail2();
+    extern int unjail2(uint64_t, uint64_t);
+    rv = unjail2(allproc + kaslr_shift, kern_cred);
 
     kwrite_uint64(our_proc + offsetof_p_ucred, our_cred);
     return rv;

@@ -920,6 +920,66 @@ find_sysbootnonce(void)
     return 0;
 }
 
+addr_t
+find_trustcache(void)
+{
+    addr_t cbz, call, func, val;
+    addr_t ref = find_strref("amfi_prevent_old_entitled_platform_binaries", 1, 1);
+    if (!ref) {
+        return 0;
+    }
+    ref -= kerndumpbase;
+    cbz = step64(kernel, ref, 32, INSN_CBZ);
+    if (!cbz) {
+        return 0;
+    }
+    call = step64(kernel, follow_cbz(kernel, cbz), 4, INSN_CALL);
+    if (!call) {
+        return 0;
+    }
+    func = follow_call64(kernel, call);
+    if (!func) {
+        return 0;
+    }
+    val = calc64(kernel, func, func + 16, 8);
+    if (!val) {
+        return 0;
+    }
+    return val + kerndumpbase;
+}
+
+addr_t
+find_amficache(void)
+{
+    addr_t cbz, call, func, bof, val;
+    addr_t ref = find_strref("amfi_prevent_old_entitled_platform_binaries", 1, 1);
+    if (!ref) {
+        return 0;
+    }
+    ref -= kerndumpbase;
+    cbz = step64(kernel, ref, 32, INSN_CBZ);
+    if (!cbz) {
+        return 0;
+    }
+    call = step64(kernel, follow_cbz(kernel, cbz), 4, INSN_CALL);
+    if (!call) {
+        return 0;
+    }
+    func = follow_call64(kernel, call);
+    if (!func) {
+        return 0;
+    }
+    bof = bof64(kernel, func - 256, func);
+    if (!bof) {
+        return 0;
+    }
+    val = calc64(kernel, bof, func, 9);
+    if (!val) {
+        return 0;
+    }
+    return val + kerndumpbase;
+}
+
 #ifdef HAVE_MAIN
 
 /* extra_recipe **************************************************************/

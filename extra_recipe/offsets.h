@@ -44,6 +44,7 @@ enum {
 extern unsigned offsetof_p_pid;
 extern unsigned offsetof_task;
 extern unsigned offsetof_p_ucred;
+extern unsigned offsetof_p_comm;
 extern unsigned offsetof_p_csflags;
 extern unsigned offsetof_itk_self;
 extern unsigned offsetof_itk_sself;

@@ -14,6 +14,7 @@
 unsigned offsetof_p_pid = 0x10;               // proc_t::p_pid
 unsigned offsetof_task = 0x18;                // proc_t::task
 unsigned offsetof_p_ucred = 0x100;            // proc_t::p_ucred
+unsigned offsetof_p_comm = 0x26c;             // proc_t::p_comm
 unsigned offsetof_p_csflags = 0x2a8;          // proc_t::p_csflags
 unsigned offsetof_itk_self = 0xD8;            // task_t::itk_self (convert_task_to_port)
 unsigned offsetof_itk_sself = 0xE8;           // task_t::itk_sself (task_get_special_port)
